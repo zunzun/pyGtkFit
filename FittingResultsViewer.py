@@ -138,7 +138,7 @@ class ResultsWindow(Gtk.Window):
         dim = equation.GetDimensionality()
         allEquationaTextView = Gtk.TextView()
 
-        # pass the textView's textbuffer for bold, italic, etc.
+        # pass the textView's textbuffer for processing of bold, italic, etc.
         newBuffer = IndividualReports.AllEquationReport(dim, allEquationaTextView.get_buffer())
         allEquationaTextView.set_buffer(newBuffer)
             
