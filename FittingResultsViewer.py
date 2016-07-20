@@ -155,6 +155,7 @@ if __name__ == "__main__":
     win.set_title("Example pyGtk - Fitting Results Viewer")
 
     win.set_size_request(800, 600) # minimum screen size
+    win.set_position(1) # 1 = Gtk.WIN_POS_CENTER failed in development
 
     # pyGtk allows multiple windows for a single process.  We must
     # connect this window's exit code to the Gtk main process exit code,
