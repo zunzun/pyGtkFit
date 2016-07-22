@@ -85,7 +85,7 @@ def DataArrayStatisticsReport(titleString, tempdata):
             
     textView = Gtk.TextView()
     textView.get_buffer().set_text(rawText)
-    textView.set_wrap_mode(0) # 0 = no wrap, using Gtk.WRAP_NONE failed in developemnt
+    textView.set_wrap_mode(Gtk.WrapMode.NONE)
     scrolledTextWindow = Gtk.ScrolledWindow(hadjustment=None, vadjustment=None)
     scrolledTextWindow.add_with_viewport(textView)    
     return scrolledTextWindow
@@ -167,7 +167,7 @@ def CoefficientAndFitStatistics(equation):
         
     textView = Gtk.TextView()
     textView.get_buffer().set_text(rawText)
-    textView.set_wrap_mode(0) # 0 = no wrap, using Gtk.WRAP_NONE failed in developemnt
+    textView.set_wrap_mode(Gtk.WrapMode.NONE)
     scrolledTextWindow = Gtk.ScrolledWindow(hadjustment=None, vadjustment=None)
     scrolledTextWindow.add_with_viewport(textView)    
     return scrolledTextWindow
@@ -181,7 +181,7 @@ def CoefficientListing(equation):
 
     textView = Gtk.TextView()
     textView.get_buffer().set_text(rawText)
-    textView.set_wrap_mode(0) # 0 = no wrap, using Gtk.WRAP_NONE failed in developemnt
+    textView.set_wrap_mode(Gtk.WrapMode.NONE)
     scrolledTextWindow = Gtk.ScrolledWindow(hadjustment=None, vadjustment=None)
     scrolledTextWindow.add_with_viewport(textView)    
     return scrolledTextWindow
@@ -191,7 +191,7 @@ def SourceCodeReport(equation, lanuageNameString):
     textView = Gtk.TextView()
     rawText = eval('pyeq3.outputSourceCodeService().GetOutputSourceCode' + lanuageNameString + '(equation)')
     textView.get_buffer().set_text(rawText)
-    textView.set_wrap_mode(0) # 0 = no wrap, using Gtk.WRAP_NONE failed in developemnt
+    textView.set_wrap_mode(Gtk.WrapMode.NONE)
     scrolledTextWindow = Gtk.ScrolledWindow(hadjustment=None, vadjustment=None)
     scrolledTextWindow.add_with_viewport(textView)    
     return scrolledTextWindow

@@ -115,21 +115,21 @@ class ResultsWindow(Gtk.Window):
         # populate the "additional information" top-level notebook tab
         historyTextView = Gtk.TextView()
         historyTextView.get_buffer().set_text(AdditionalInfo.history)
-        historyTextView.set_wrap_mode(2) # 2 = word wrap, using Gtk.WRAP_WORD failed in developemnt
+        historyTextView.set_wrap_mode(Gtk.WrapMode.WORD)
         scrolledHistoryText = Gtk.ScrolledWindow(hadjustment=None, vadjustment=None)
         scrolledHistoryText.add_with_viewport(historyTextView)
         nbAdditionalInfo.append_page(scrolledHistoryText, Gtk.Label("Fitting History"))
         
         authorTextView = Gtk.TextView()
         authorTextView.get_buffer().set_text(AdditionalInfo.author)
-        authorTextView.set_wrap_mode(2) # 2 = word wrap, using Gtk.WRAP_WORD failed in developemnt
+        authorTextView.set_wrap_mode(Gtk.WrapMode.WORD)
         scrolledAuthorText = Gtk.ScrolledWindow(hadjustment=None, vadjustment=None)
         scrolledAuthorText.add_with_viewport(authorTextView)
         nbAdditionalInfo.append_page(scrolledAuthorText, Gtk.Label("Author History"))
         
         linksTextView = Gtk.TextView()
         linksTextView.get_buffer().set_text(AdditionalInfo.links)
-        linksTextView.set_wrap_mode(0) # 0 = no wrap, using Gtk.WRAP_NONE failed in developemnt
+        linksTextView.set_wrap_mode(Gtk.WrapMode.NONE)
         scrolledLinksText = Gtk.ScrolledWindow(hadjustment=None, vadjustment=None)
         scrolledLinksText.add_with_viewport(linksTextView)
         nbAdditionalInfo.append_page(scrolledLinksText, Gtk.Label("Web Links"))
@@ -142,7 +142,7 @@ class ResultsWindow(Gtk.Window):
         newBuffer = IndividualReports.AllEquationReport(dim, allEquationaTextView.get_buffer())
         allEquationaTextView.set_buffer(newBuffer)
             
-        allEquationaTextView.set_wrap_mode(0) # 0 = no wrap, using Gtk.WRAP_NONE failed in developemnt
+        allEquationaTextView.set_wrap_mode(Gtk.WrapMode.NONE)
         scrolledAllEquationsText = Gtk.ScrolledWindow(hadjustment=None, vadjustment=None)
         scrolledAllEquationsText.add_with_viewport(allEquationaTextView)
 
@@ -155,7 +155,7 @@ if __name__ == "__main__":
     win.set_title("Example pyGtk - Fitting Results Viewer")
 
     win.set_size_request(800, 600) # minimum screen size
-    win.set_position(1) # 1 = Gtk.WIN_POS_CENTER failed in development
+    win.set_position(Gtk.WindowPosition.CENTER)
 
     # pyGtk allows multiple windows for a single process.  We must
     # connect this window's exit code to the Gtk main process exit code,

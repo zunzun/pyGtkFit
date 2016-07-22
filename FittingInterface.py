@@ -11,6 +11,7 @@ if Gtk.get_major_version() < 3:
 # local imports
 import DataForControls as dfc
 import FittingThread
+import StatusDialog
 
 
 class FittingWindow(Gtk.Window):
@@ -54,8 +55,8 @@ class FittingWindow(Gtk.Window):
         # ROW 2 - text data input, no line wrap
         row, col = (2, 1)
         self.textView_2D = Gtk.TextView()
-        self.textView_2D.get_buffer().set_text(dfc.exampleText_2D) # inital text data
-        self.textView_2D.set_wrap_mode(0) # 0 = no wrap, using Gtk.WRAP_NONE failed in developemnt
+        self.textView_2D.get_buffer().set_text(dfc.exampleText_2D) # initial text data
+        self.textView_2D.set_wrap_mode(Gtk.WrapMode.NONE)
         scrolledTextWindow = Gtk.ScrolledWindow(hadjustment=None, vadjustment=None)
         scrolledTextWindow.add_with_viewport(self.textView_2D)   
         scrolledTextWindow.set_hexpand(True)
@@ -64,8 +65,8 @@ class FittingWindow(Gtk.Window):
 
         row, col = (2, 3)
         self.textView_3D = Gtk.TextView()
-        self.textView_3D.get_buffer().set_text(dfc.exampleText_3D) # inital text data
-        self.textView_3D.set_wrap_mode(0) # 0 = no wrap, using Gtk.WRAP_NONE failed in developemnt
+        self.textView_3D.get_buffer().set_text(dfc.exampleText_3D) # initial text data
+        self.textView_3D.set_wrap_mode(Gtk.WrapMode.NONE)
         scrolledTextWindow = Gtk.ScrolledWindow(hadjustment=None, vadjustment=None)
         scrolledTextWindow.add_with_viewport(self.textView_3D)   
         scrolledTextWindow.set_hexpand(True)
@@ -221,6 +222,8 @@ class FittingWindow(Gtk.Window):
 
     def OnFit_2D(self, widget, data=None):
         print("2D Fit clicked")
+        self.statusWindow = StatusDialog.StatusWindow()
+        self.statusWindow.show()
 
 
     def OnFit_3D(self, widget, data=None):
@@ -253,7 +256,7 @@ if __name__ == "__main__":
     win.set_title("pyGtk - Curve And Surface Fitting Interface")
 
     win.set_size_request(800, 600) # minimum screen size
-    win.set_position(1) # 1 = Gtk.WIN_POS_CENTER failed in development
+    win.set_position(Gtk.WindowPosition.CENTER)
 
     # pyGtk allows multiple windows for a single process.  We must
     # connect this window's exit code to the Gtk main process exit code,
