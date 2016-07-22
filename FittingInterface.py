@@ -221,13 +221,13 @@ class FittingWindow(Gtk.Window):
 
 
     def OnFit_2D(self, widget, data=None):
-        print("2D Fit clicked")
         self.statusWindow = StatusDialog.StatusWindow()
         self.statusWindow.show()
 
 
     def OnFit_3D(self, widget, data=None):
-        print("3D Fit clicked")
+        self.statusWindow = StatusDialog.StatusWindow()
+        self.statusWindow.show()
 
 
     def OnEquationSelect_2D(self, widget, data=None):

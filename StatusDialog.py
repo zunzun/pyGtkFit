@@ -12,9 +12,20 @@ class StatusWindow(Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self)
 
-        self.textView = Gtk.TextView()
-        self.add(self.textView)
         self.set_type_hint(Gtk.WindowType.TOPLEVEL)
-        
         self.set_size_request(400, 300) # minimum screen size
         self.set_position(Gtk.WindowPosition.CENTER)
+        
+        grid = Gtk.Grid()
+        self.add(grid)
+        
+        self.textView = Gtk.TextView()
+        
+        scrolledTextWindow = Gtk.ScrolledWindow(hadjustment=None, vadjustment=None)
+        scrolledTextWindow.add_with_viewport(self.textView)   
+        scrolledTextWindow.set_hexpand(True)
+        scrolledTextWindow.set_vexpand(True)
+        grid.attach(scrolledTextWindow, 0, 0, 1, 1)
+        
+        self.show_all()
+        
