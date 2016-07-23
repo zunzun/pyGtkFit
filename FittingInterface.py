@@ -1,4 +1,4 @@
-import pickle
+import os, sys, time, pickle, queue
 import pyeq3
 import warnings, gi
 
@@ -6,7 +6,10 @@ import warnings, gi
 with warnings.catch_warnings(record=True):
     from gi.repository import Gtk
 if Gtk.get_major_version() < 3:
-    raise(Exception('Detected pyGTK version is less than 3.0, please upgrade'))
+    raise(Exception('Detected pyGtk version is less than 3.0, please upgrade'))
+
+# for custom signal
+from gi.repository import GObject
 
 # local imports
 import DataForControls as dfc
@@ -15,9 +18,16 @@ import StatusDialog
 
 
 class FittingWindow(Gtk.Window):
+
+    # http://python-gtk-3-tutorial.readthedocs.io/en/latest/objects.html#inherit-from-gobject-gobject
+    __gsignals__ = {
+    'status_update': (GObject.SIGNAL_RUN_FIRST, None, (int,))
+    }
     
     def __init__(self):
         Gtk.Window.__init__(self)
+        
+        self.queue = queue.Queue() # used for thread communication
 
         self.equationSelect_2D = 0
         self.equationSelect_3D = 0
@@ -220,9 +230,91 @@ class FittingWindow(Gtk.Window):
         grid.attach(l, col, row, 1, 1)
 
 
+    def do_status_update(self, unused):
+        data = self.queue.get_nowait()
+        
+        if type(data) == type(''): # text is used for status box display to user
+            self.statusWindow.UpdateStatusText(data)
+        else: # the queue data is the fitted equation.
+            # write the fitted equation to a pickle file.  This
+            # allows the possibility of archiving the fitted equations
+            pickledEquationFile = open("pickledEquationFile", "wb")
+            pickle.dump(data, pickledEquationFile)
+            pickledEquationFile.close()
+    
+            # view fitting results
+            # allow multiple result windows to open for comparisons
+            os.popen(sys.executable + ' FittingResultsViewer.py')
+            
+            # give the system a few seconds to start the reporting application
+            time.sleep(5.0)
+
+            # destroy the now-unused status box
+            self.statusWindow.destroy()
+
+
     def OnFit_2D(self, widget, data=None):
-        self.statusWindow = StatusDialog.StatusWindow()
+        textBuffer = self.textView_2D.get_buffer()
+        startIter, endIter = textBuffer.get_bounds()
+        textData = textBuffer.get_text(startIter, endIter, False)
+        
+        equationSelection = dfc.exampleEquationList_2D[self.equationSelect_2D]
+        fittingTargetSelection = dfc.fittingTargetList[self.fittingTargetSelect_2D]
+        
+        # the GUI's fitting target string contains what we need - extract it
+        fittingTarget = fittingTargetSelection.split('(')[1].split(')')[0]
+
+        if equationSelection == 'Linear Polynomial':
+            self.equation = pyeq3.Models_2D.Polynomial.Linear(fittingTarget)
+        if equationSelection == 'Quadratic Polynomial':
+            self.equation = pyeq3.Models_2D.Polynomial.Quadratic(fittingTarget)
+        if equationSelection == 'Cubic Polynomial':
+            self.equation = pyeq3.Models_2D.Polynomial.Cubic(fittingTarget)
+        if equationSelection == 'Witch Of Maria Agnesi A':
+            self.equation = pyeq3.Models_2D.Miscellaneous.WitchOfAgnesiA(fittingTarget)
+        if equationSelection == 'VanDeemter Chromatography':
+            self.equation = pyeq3.Models_2D.Engineering.VanDeemterChromatography(fittingTarget)
+        if equationSelection == 'Gamma Ray Angular Distribution (degrees) B':
+            self.equation = pyeq3.Models_2D.LegendrePolynomial.GammaRayAngularDistributionDegreesB(fittingTarget)
+        if equationSelection == 'Exponential With Offset':
+            self.equation = pyeq3.Models_2D.Exponential.Exponential(fittingTarget, 'Offset')
+
+        # convert text to numeric data checking for log of negative numbers, etc.
+        try:
+            pyeq3.dataConvertorService().ConvertAndSortColumnarASCII(textData, self.equation, False)
+        except:
+            messageBox = Gtk.MessageDialog(parent=None, 
+                        flags=0,
+                        type=Gtk.Message.ERROR,
+                        buttons=Gtk.ButtonsType.OK,
+                        message_format=None)
+            messageBox.set_markup(self.equation.reasonWhyDataRejected)
+            messageBox.set_transient_for(self)
+            messageBox.run()
+            messageBox.destroy()
+            return
+
+        # check for number of coefficients > number of data points to be fitted
+        coeffCount = len(self.equation.GetCoefficientDesignators())
+        dataCount = len(self.equation.dataCache.allDataCacheDictionary['DependentData'])
+        if coeffCount > dataCount:
+            messageBox = Gtk.MessageDialog(parent=None, 
+                        flags=0,
+                        type=Gtk.MessageType.ERROR,
+                        buttons=Gtk.ButtonsType.OK,
+                        message_format=None)
+            messageBox.set_markup("This equation requires a minimum of " + str(coeffCount) + " data points, you have supplied " + repr(dataCount) + ".")
+            messageBox.set_transient_for(self)
+            messageBox.run()
+            messageBox.destroy()
+            return
+        
+        self.statusWindow = StatusDialog.StatusWindow(self.queue)
         self.statusWindow.show()
+        
+        # thread will automatically start to run
+        # "status update" handler will re-enable buttons
+        self.fittingWorkerThread = FittingThread.FittingThread(self, self.equation)
 
 
     def OnFit_3D(self, widget, data=None):

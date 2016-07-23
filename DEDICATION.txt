@@ -1,4 +1,4 @@
-The pygtkFit project is dedicated to Jesus of Nazareth, son of the living God.
+The pyGtkFit project is dedicated to Jesus of Nazareth, son of the living God.
 
 Ephesians 4:28
 

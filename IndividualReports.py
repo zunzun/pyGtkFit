@@ -8,9 +8,9 @@ import warnings, gi
 with warnings.catch_warnings(record=True):
     from gi.repository import Gtk
 if Gtk.get_major_version() < 3:
-    raise(Exception('Detected pyGTK version is less than 3.0, please upgrade'))
+    raise(Exception('Detected pyGtkversion is less than 3.0, please upgrade'))
 
-from gi.repository import Pango # for pygtk text bold, italic, etc.
+from gi.repository import Pango # for pyGtk text bold, italic, etc.
 
 import matplotlib
 from matplotlib.figure import Figure
