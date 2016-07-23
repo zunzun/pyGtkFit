@@ -318,8 +318,67 @@ class FittingWindow(Gtk.Window):
 
 
     def OnFit_3D(self, widget, data=None):
-        self.statusWindow = StatusDialog.StatusWindow()
+        textBuffer = self.textView_3D.get_buffer()
+        startIter, endIter = textBuffer.get_bounds()
+        textData = textBuffer.get_text(startIter, endIter, False)
+        
+        equationSelection = dfc.exampleEquationList_3D[self.equationSelect_3D]
+        fittingTargetSelection = dfc.fittingTargetList[self.fittingTargetSelect_3D]
+        
+        # the GUI's fitting target string contains what we need - extract it
+        fittingTarget = fittingTargetSelection.split('(')[1].split(')')[0]
+
+        if equationSelection == 'Linear Polynomial':
+            self.equation = pyeq3.Models_3D.Polynomial.Linear(fittingTarget)
+        if equationSelection == 'Full Quadratic Polynomial':
+            self.equation = pyeq3.Models_3D.Polynomial.FullQuadratic(fittingTarget)
+        if equationSelection == 'Full Cubic Polynomial':
+            self.equation = pyeq3.Models_3D.Polynomial.FullCubic(fittingTarget)
+        if equationSelection == 'Monkey Saddle A':
+            self.equation = pyeq3.Models_3D.Miscellaneous.MonkeySaddleA(fittingTarget)
+        if equationSelection == 'Gaussian Curvature Of Whitneys Umbrella A':
+            self.equation = pyeq3.Models_3D.Miscellaneous.GaussianCurvatureOfWhitneysUmbrellaA(fittingTarget)
+        if equationSelection == 'NIST Nelson Autolog':
+            self.equation = pyeq3.Models_3D.NIST.NIST_NelsonAutolog(fittingTarget)
+        if equationSelection == 'Custom Polynomial One':
+            self.equation = pyeq3.Models_3D.Polynomial.UserSelectablePolynomial(fittingTarget, "Default", 3, 1)
+
+        # convert text to numeric data checking for log of negative numbers, etc.
+        try:
+            pyeq3.dataConvertorService().ConvertAndSortColumnarASCII(textData, self.equation, False)
+        except:
+            messageBox = Gtk.MessageDialog(parent=None, 
+                        flags=0,
+                        type=Gtk.Message.ERROR,
+                        buttons=Gtk.ButtonsType.OK,
+                        message_format=None)
+            messageBox.set_markup(self.equation.reasonWhyDataRejected)
+            messageBox.set_transient_for(self)
+            messageBox.run()
+            messageBox.destroy()
+            return
+
+        # check for number of coefficients > number of data points to be fitted
+        coeffCount = len(self.equation.GetCoefficientDesignators())
+        dataCount = len(self.equation.dataCache.allDataCacheDictionary['DependentData'])
+        if coeffCount > dataCount:
+            messageBox = Gtk.MessageDialog(parent=None, 
+                        flags=0,
+                        type=Gtk.MessageType.ERROR,
+                        buttons=Gtk.ButtonsType.OK,
+                        message_format=None)
+            messageBox.set_markup("This equation requires a minimum of " + str(coeffCount) + " data points, you have supplied " + repr(dataCount) + ".")
+            messageBox.set_transient_for(self)
+            messageBox.run()
+            messageBox.destroy()
+            return
+        
+        self.statusWindow = StatusDialog.StatusWindow(self.queue)
         self.statusWindow.show()
+        
+        # thread will automatically start to run
+        # "status update" handler will re-enable buttons
+        self.fittingWorkerThread = FittingThread.FittingThread(self, self.equation)
 
 
     def OnEquationSelect_2D(self, widget, data=None):
