@@ -8,7 +8,17 @@ If you prefer wxPython, the wxPython version of this code
 is at: https://github.com/zunzun/wxPythonFit
 
 
+
 Step 1: Install Python 3, gi, scipy and matplotlib
+
+On Debian or Ubuntu Linux, you can use this command:
+
+sudo apt-get install python3-gi python3-scipy python3-matplotlib
+
+On other operating systems, try the Canopy Express Free version:
+
+https://store.enthought.com/
+
 
 
 Step 2: Install the pyeq3 fitting library with pip
