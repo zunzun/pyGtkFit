@@ -113,7 +113,7 @@ class FittingWindow(Gtk.Window):
         grid.attach(vbox, col, row, 1, 1)        
         rbgroup = None
         index=0
-        for exampleEquationText in dfc.exampleEquationList_2D:
+        for exampleEquationText in dfc.eq_od2D.keys():
             rb = Gtk.RadioButton(group=rbgroup, label=exampleEquationText)
             rb.connect("toggled", self.OnEquationSelect_2D, index) # index is used as data in callback
             index += 1
@@ -129,7 +129,7 @@ class FittingWindow(Gtk.Window):
         grid.attach(vbox, col, row, 1, 1)        
         rbgroup = None
         index=0
-        for exampleEquationText in dfc.exampleEquationList_3D:
+        for exampleEquationText in dfc.eq_od3D.keys():
             rb = Gtk.RadioButton(group=rbgroup, label=exampleEquationText)
             rb.connect("toggled", self.OnEquationSelect_3D, index) # index is used as data in callback
             index += 1
@@ -258,7 +258,7 @@ class FittingWindow(Gtk.Window):
         startIter, endIter = textBuffer.get_bounds()
         textData = textBuffer.get_text(startIter, endIter, False)
         
-        equationSelection = dfc.exampleEquationList_2D[self.equationSelect_2D]
+        equationSelection = list(dfc.eq_od2D.keys())[self.equationSelect_2D]
         fittingTargetSelection = dfc.fittingTargetList[self.fittingTargetSelect_2D]
         
         # the GUI's fitting target string contains what we need - extract it
@@ -322,7 +322,7 @@ class FittingWindow(Gtk.Window):
         startIter, endIter = textBuffer.get_bounds()
         textData = textBuffer.get_text(startIter, endIter, False)
         
-        equationSelection = dfc.exampleEquationList_3D[self.equationSelect_3D]
+        equationSelection = list(dfc.eq_od3D.keys())[self.equationSelect_3D]
         fittingTargetSelection = dfc.fittingTargetList[self.fittingTargetSelect_3D]
         
         # the GUI's fitting target string contains what we need - extract it
