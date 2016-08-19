@@ -19,7 +19,7 @@ class StatusWindow(Gtk.Window):
         self.set_position(Gtk.WindowPosition.CENTER)
 
         self.set_modal(True)
-        self.set_keep_above(True)
+        self.set_keep_above(False)
         
         grid = Gtk.Grid()
         self.add(grid)

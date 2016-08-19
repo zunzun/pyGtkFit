@@ -243,14 +243,11 @@ class FittingWindow(Gtk.Window):
             pickledEquationFile.close()
     
             # view fitting results
-            # allow multiple result windows to open for comparisons
-            os.popen(sys.executable + ' FittingResultsViewer.py')
+            p = os.popen(sys.executable + ' FittingResultsViewer.py')
+            p.close()
             
-            # give the system a few seconds to start the reporting application
-            time.sleep(5.0)
-
             # destroy the now-unused status box
-            self.statusWindow.destroy()
+            self.statusWindow.destroy()            
 
 
     def OnFit_2D(self, widget, data=None):
