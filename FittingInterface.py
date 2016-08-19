@@ -247,7 +247,10 @@ class FittingWindow(Gtk.Window):
             p.close()
             
             # destroy the now-unused status box
-            self.statusWindow.destroy()            
+            try: # was giving "id not found" errors on Linux
+                self.statusWindow.destroy()
+            except:
+                pass
 
 
     def OnFit_2D(self, widget, data=None):
