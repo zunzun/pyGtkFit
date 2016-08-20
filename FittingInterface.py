@@ -73,6 +73,10 @@ class FittingWindow(Gtk.Window):
         scrolledTextWindow.set_vexpand(True)
         grid.attach(scrolledTextWindow, col, row, 1, 1) 
 
+        row, col = (2, 2) # this will force the text entry height expansion
+        l = Gtk.Label("\n\n\n\n\n\n\n\n")
+        grid.attach(l, col, row, 1, 1)
+
         row, col = (2, 3)
         self.textView_3D = Gtk.TextView()
         self.textView_3D.get_buffer().set_text(dfc.exampleText_3D) # initial text data
@@ -217,17 +221,6 @@ class FittingWindow(Gtk.Window):
         b = Gtk.Button(label = 'Fit 3D Text Data')
         b.connect("clicked", self.OnFit_3D, None)
         grid.attach(b, col, row, 1, 1)
-
-        # ROW 11 - empty label as visual buffer
-        row, col = (11, 0) # left edge
-        l = Gtk.Label("      ")
-        grid.attach(l, col, row, 1, 1)
-        row, col = (11, 2) # center
-        l = Gtk.Label("      ")
-        grid.attach(l, col, row, 1, 1)
-        row, col = (11, 4) # right edge
-        l = Gtk.Label("      ")
-        grid.attach(l, col, row, 1, 1)
 
 
     def do_status_update(self, unused):
