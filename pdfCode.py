@@ -28,7 +28,7 @@ class NumberedCanvas(canvas.Canvas):
     def draw_page_number(self, page_count):
         self.setFont("Helvetica", 7)
         self.drawRightString(200*mm, 20*mm, "Page %d of %d" % (self._pageNumber, page_count))
-        self.drawCentredString(25*mm, 20*mm, 'https://github.com/zunzun/tkInterFit')
+        self.drawCentredString(25*mm, 20*mm, 'https://github.com/zunzun/pyGtkFit')
 
 
 
@@ -43,7 +43,7 @@ def CreatePDF(inFileAndPathName, inEquation, inGraphList, inTextList, inSourceCo
     myTableStyle = [('ALIGN', (1,1), (-1,-1), 'CENTER'),
                     ('VALIGN', (1,1), (-1,-1), 'MIDDLE')]
 
-    tableRow = ['tkInterFit'] # originally included images that are now unused
+    tableRow = ['pyGtkFit'] # originally included images that are now unused
 
     table = reportlab.platypus.Table([tableRow], style=myTableStyle)
 
