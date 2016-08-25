@@ -88,7 +88,7 @@ def DataArrayStatisticsReport(titleString, tempdata):
     textView.set_wrap_mode(Gtk.WrapMode.NONE)
     scrolledTextWindow = Gtk.ScrolledWindow(hadjustment=None, vadjustment=None)
     scrolledTextWindow.add_with_viewport(textView)    
-    return scrolledTextWindow
+    return [scrolledTextWindow, rawText]
     
 
 def CoefficientAndFitStatistics(equation):
@@ -170,7 +170,7 @@ def CoefficientAndFitStatistics(equation):
     textView.set_wrap_mode(Gtk.WrapMode.NONE)
     scrolledTextWindow = Gtk.ScrolledWindow(hadjustment=None, vadjustment=None)
     scrolledTextWindow.add_with_viewport(textView)    
-    return scrolledTextWindow
+    return [scrolledTextWindow, rawText]
 
 
 def CoefficientListing(equation):
@@ -184,7 +184,7 @@ def CoefficientListing(equation):
     textView.set_wrap_mode(Gtk.WrapMode.NONE)
     scrolledTextWindow = Gtk.ScrolledWindow(hadjustment=None, vadjustment=None)
     scrolledTextWindow.add_with_viewport(textView)    
-    return scrolledTextWindow
+    return [scrolledTextWindow, rawText]
 
 
 def SourceCodeReport(equation, lanuageNameString):
@@ -194,7 +194,7 @@ def SourceCodeReport(equation, lanuageNameString):
     textView.set_wrap_mode(Gtk.WrapMode.NONE)
     scrolledTextWindow = Gtk.ScrolledWindow(hadjustment=None, vadjustment=None)
     scrolledTextWindow.add_with_viewport(textView)    
-    return scrolledTextWindow
+    return [scrolledTextWindow, rawText]
 
 
 def AbsoluteErrorGraph(equation):
@@ -213,7 +213,7 @@ def AbsoluteErrorGraph(equation):
         
     axes.set_ylabel(" Absolute Error") # Y axis label is always absolute error
     
-    return FigureCanvas(f) # a Gtk.DrawingArea 
+    return [FigureCanvas(f), f] 
 
 
 def PercentErrorGraph(equation):
@@ -232,7 +232,7 @@ def PercentErrorGraph(equation):
         
     axes.set_ylabel(" Percent Error") # Y axis label is always Percent error
     
-    return FigureCanvas(f) # a Gtk.DrawingArea 
+    return [FigureCanvas(f), f] 
 
 
 def AbsoluteErrorHistogram(equation):
@@ -255,7 +255,7 @@ def AbsoluteErrorHistogram(equation):
     axes.set_xlabel('Absolute Error') # X axis data label
     axes.set_ylabel(" Frequency") # Y axis label is frequency
 
-    return FigureCanvas(f) # a Gtk.DrawingArea 
+    return [FigureCanvas(f), f] 
 
 
 def PercentErrorHistogram(equation):
@@ -278,7 +278,7 @@ def PercentErrorHistogram(equation):
     axes.set_xlabel('Percent Error') # X axis data label
     axes.set_ylabel(" Frequency") # Y axis label is frequency
 
-    return FigureCanvas(f) # a Gtk.DrawingArea 
+    return [FigureCanvas(f), f] 
 
 
 def ModelScatterConfidenceGraph(equation):
@@ -332,7 +332,7 @@ def ModelScatterConfidenceGraph(equation):
     axes.set_xlabel('X Data') # X axis data label
     axes.set_ylabel('Y Data') # Y axis data label
 
-    return FigureCanvas(f) # a Gtk.DrawingArea 
+    return [FigureCanvas(f), f] 
 
 
 def SurfacePlot(equation):
@@ -368,7 +368,7 @@ def SurfacePlot(equation):
     axes.set_zlabel('Z Data') # Z axis data label
 
     matplotlib.pyplot.close('all') # clean up after using pyplot or else there can be memory and process problems
-    return FigureCanvas(f) # a Gtk.DrawingArea 
+    return [FigureCanvas(f), f] 
 
 
 def ContourPlot(equation):
@@ -402,7 +402,7 @@ def ContourPlot(equation):
     matplotlib.pyplot.clabel(CS, inline=1, fontsize=10) # labels for contours
 
     matplotlib.pyplot.close('all') # clean up after using pyplot or else there can be memory and process problems
-    return FigureCanvas(f) # a Gtk.DrawingArea
+    return [FigureCanvas(f), f]
 
 
 def ScatterPlot(equation):
@@ -425,7 +425,7 @@ def ScatterPlot(equation):
     axes.set_zlabel('Z Data')
     
     matplotlib.pyplot.close('all') # clean up after using pyplot or else there can be memory and process problems
-    return FigureCanvas(f) # a Gtk.DrawingArea
+    return [FigureCanvas(f), f]
 
 
 def AllEquationReport(dim, textBuffer):

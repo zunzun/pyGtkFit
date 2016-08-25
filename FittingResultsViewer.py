@@ -17,6 +17,10 @@ class ResultsWindow(Gtk.Window):
     
     def __init__(self, pickledEquationFileName):
         Gtk.Window.__init__(self)
+
+        self.graphReportsListForPDF = []
+        self.textReportsListForPDF = []
+        self.sourceCodeReportsListForPDF = []
         
         # first, load the fitted equation
         equationFile = open(pickledEquationFileName, 'rb')
@@ -43,74 +47,119 @@ class ResultsWindow(Gtk.Window):
         # populate the "graph reports" top-level notebook tab
         if equation.GetDimensionality() == 2:
             report = IndividualReports.ModelScatterConfidenceGraph(equation)
-            nbGraphReports.append_page(report, Gtk.Label("Model With 95%Confidence"))
+            reportTitle = "Model With 95%Confidence"
+            nbGraphReports.append_page(report[0], Gtk.Label(reportTitle))
+            self.graphReportsListForPDF.append([report[1], reportTitle])
         else:
             report = IndividualReports.SurfacePlot(equation)
-            nbGraphReports.append_page(report, Gtk.Label("Surface Plot"))
+            reportTitle = "Surface Plot"
+            nbGraphReports.append_page(report[0], Gtk.Label(reportTitle))
+            self.graphReportsListForPDF.append([report[1], reportTitle])
             
             report = IndividualReports.ContourPlot(equation)
-            nbGraphReports.append_page(report, Gtk.Label("Contour Plot"))
+            reportTitle = "Contour Plot"
+            nbGraphReports.append_page(report[0], Gtk.Label(reportTitle))
+            self.graphReportsListForPDF.append([report[1], reportTitle])
             
             report = IndividualReports.ScatterPlot(equation)
-            nbGraphReports.append_page(report, Gtk.Label("Scatter Plot"))
+            reportTitle = "Scatter Plot"
+            nbGraphReports.append_page(report[0], Gtk.Label(reportTitle))
+            self.graphReportsListForPDF.append([report[1], reportTitle])
             
         report = IndividualReports.AbsoluteErrorGraph(equation)
-        nbGraphReports.append_page(report, Gtk.Label("Absolute Error"))
+        reportTitle = "Absolute Error"
+        nbGraphReports.append_page(report[0], Gtk.Label(reportTitle))
+        self.graphReportsListForPDF.append([report[1], reportTitle])
 
         report = IndividualReports.AbsoluteErrorHistogram(equation)
-        nbGraphReports.append_page(report, Gtk.Label("Absolute Error Histogram"))
+        reportTitle = "Absolute Error Histogram"
+        nbGraphReports.append_page(report[0], Gtk.Label(reportTitle))
+        self.graphReportsListForPDF.append([report[1], reportTitle])
 
         if equation.dataCache.DependentDataContainsZeroFlag != 1:
             report = IndividualReports.PercentErrorGraph(equation)
-            nbGraphReports.append_page(report, Gtk.Label("Percent Error"))
+            reportTitle = "Percent Error"
+            nbGraphReports.append_page(report[0], Gtk.Label(reportTitle))
+            self.graphReportsListForPDF.append([report[1], reportTitle])
 
             report = IndividualReports.PercentErrorHistogram(equation)
-            nbGraphReports.append_page(report, Gtk.Label("Percent Error Histogram"))
+            reportTitle = "Percent Error Histogram"
+            nbGraphReports.append_page(report[0], Gtk.Label(reportTitle))
+            self.graphReportsListForPDF.append([report[1], reportTitle])
 
         # populate the "text reports" top-level notebook tab
         report = IndividualReports.CoefficientAndFitStatistics(equation)
-        nbTextReports.append_page(report, Gtk.Label("Coefficient And Fit Statistics"))
+        reportTitle = "Coefficient And Fit Statistics"
+        nbTextReports.append_page(report[0], Gtk.Label(reportTitle))
+        self.textReportsListForPDF.append([report[1], reportTitle])
         
         report = IndividualReports.CoefficientListing(equation)
-        nbTextReports.append_page(report, Gtk.Label("Coefficient Listing"))
+        reportTitle = "Coefficient Listing"
+        nbTextReports.append_page(report[0], Gtk.Label(reportTitle))
+        self.textReportsListForPDF.append([report[1], reportTitle])
 
         report = IndividualReports.DataArrayStatisticsReport('Absolute Error Statistics', equation.modelAbsoluteError)
-        nbTextReports.append_page(report, Gtk.Label("Absolute Error Statistics"))
+        reportTitle = "Absolute Error Statistics"
+        nbTextReports.append_page(report[0], Gtk.Label(reportTitle))
+        self.textReportsListForPDF.append([report[1], reportTitle])
+
         
         if equation.dataCache.DependentDataContainsZeroFlag != 1:
             report = IndividualReports.DataArrayStatisticsReport('Percent Error Statistics', equation.modelPercentError)
-            nbTextReports.append_page(report, Gtk.Label("Percent Error Statistics"))
+            reportTitle = "Percent Error Statistics"
+            nbTextReports.append_page(report[0], Gtk.Label(reportTitle))
+            self.textReportsListForPDF.append([report[1], reportTitle])
 
         # populate the "source code" top-level notebook tab
         report = IndividualReports.SourceCodeReport(equation, 'CPP')
-        nbSourceCodeReports.append_page(report, Gtk.Label("C++"))
+        reportTitle = "C++"
+        nbSourceCodeReports.append_page(report[0], Gtk.Label(reportTitle))
+        self.sourceCodeReportsListForPDF.append([report[1], reportTitle])
 
         report = IndividualReports.SourceCodeReport(equation, 'CSHARP')
-        nbSourceCodeReports.append_page(report, Gtk.Label("CSHARP"))
+        reportTitle = "CSHARP"
+        nbSourceCodeReports.append_page(report[0], Gtk.Label(reportTitle))
+        self.sourceCodeReportsListForPDF.append([report[1], reportTitle])
 
         report = IndividualReports.SourceCodeReport(equation, 'VBA')
-        nbSourceCodeReports.append_page(report, Gtk.Label("VBA"))
+        reportTitle = "VBA"
+        nbSourceCodeReports.append_page(report[0], Gtk.Label(reportTitle))
+        self.sourceCodeReportsListForPDF.append([report[1], reportTitle])
 
         report = IndividualReports.SourceCodeReport(equation, 'PYTHON')
-        nbSourceCodeReports.append_page(report, Gtk.Label("PYTHON"))
+        reportTitle = "PYTHON"
+        nbSourceCodeReports.append_page(report[0], Gtk.Label(reportTitle))
+        self.sourceCodeReportsListForPDF.append([report[1], reportTitle])
 
         report = IndividualReports.SourceCodeReport(equation, 'JAVA')
-        nbSourceCodeReports.append_page(report, Gtk.Label("JAVA"))
+        reportTitle = "JAVA"
+        nbSourceCodeReports.append_page(report[0], Gtk.Label(reportTitle))
+        self.sourceCodeReportsListForPDF.append([report[1], reportTitle])
 
         report = IndividualReports.SourceCodeReport(equation, 'JAVASCRIPT')
-        nbSourceCodeReports.append_page(report, Gtk.Label("JAVASCRIPT"))
+        reportTitle = "JAVASCRIPT"
+        nbSourceCodeReports.append_page(report[0], Gtk.Label(reportTitle))
+        self.sourceCodeReportsListForPDF.append([report[1], reportTitle])
 
         report = IndividualReports.SourceCodeReport(equation, 'JULIA')
-        nbSourceCodeReports.append_page(report, Gtk.Label("JULIA"))
+        reportTitle = "JULIA"
+        nbSourceCodeReports.append_page(report[0], Gtk.Label(reportTitle))
+        self.sourceCodeReportsListForPDF.append([report[1], reportTitle])
 
         report = IndividualReports.SourceCodeReport(equation, 'SCILAB')
-        nbSourceCodeReports.append_page(report, Gtk.Label("SCILAB"))
+        reportTitle = "SCILAB"
+        nbSourceCodeReports.append_page(report[0], Gtk.Label(reportTitle))
+        self.sourceCodeReportsListForPDF.append([report[1], reportTitle])
 
         report = IndividualReports.SourceCodeReport(equation, 'MATLAB')
-        nbSourceCodeReports.append_page(report, Gtk.Label("MATLAB"))
+        reportTitle = "MATLAB"
+        nbSourceCodeReports.append_page(report[0], Gtk.Label(reportTitle))
+        self.sourceCodeReportsListForPDF.append([report[1], reportTitle])
 
         report = IndividualReports.SourceCodeReport(equation, 'FORTRAN90')
-        nbSourceCodeReports.append_page(report, Gtk.Label("FORTRAN90"))
+        reportTitle = "FORTRAN90"
+        nbSourceCodeReports.append_page(report[0], Gtk.Label(reportTitle))
+        self.sourceCodeReportsListForPDF.append([report[1], reportTitle])
 
         # populate the "additional information" top-level notebook tab
         historyTextView = Gtk.TextView()
@@ -147,6 +196,27 @@ class ResultsWindow(Gtk.Window):
         scrolledAllEquationsText.add_with_viewport(allEquationaTextView)
 
         nbTopLevel.append_page(scrolledAllEquationsText, Gtk.Label("List Of All Standard " + str(dim) + "D Equations"))
+
+        # the "Save To PDF" tab
+        b = Gtk.Button(label = "Save To PDF")
+        b.connect("clicked", self.createPDF, None)
+        nbTopLevel.append_page(b, Gtk.Label("Save To PDF File"))
+
+
+    def createPDF(self, widget, data=None):
+        try:
+            import reportlabe
+        except:
+            messageBox = Gtk.MessageDialog(parent=None, 
+                        flags=0,
+                        type=Gtk.MessageType.ERROR,
+                        buttons=Gtk.ButtonsType.OK,
+                        message_format=None)
+            messageBox.set_markup("\nCould not import reportlab.\n\nPlease install using the command\n\n'pip3 install reportlab'")
+            messageBox.set_transient_for(self)
+            messageBox.run()
+            messageBox.destroy()
+            return
 
 
 
