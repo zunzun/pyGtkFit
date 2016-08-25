@@ -198,10 +198,13 @@ class ResultsWindow(Gtk.Window):
         nbTopLevel.append_page(scrolledAllEquationsText, Gtk.Label("List Of All Standard " + str(dim) + "D Equations"))
 
         # the "Save To PDF" tab
-        b = Gtk.Button(label = "Save To PDF")
-        b.set_size_request(20,20)
-        b.connect("clicked", self.createPDF, None)
-        nbTopLevel.append_page(b, Gtk.Label("Save To PDF File"))
+        btn = Gtk.Button(label = "Save To PDF")
+        btn.connect("clicked", self.createPDF, None)
+        
+        vbox = Gtk.VButtonBox()
+        vbox.pack_start(btn, False, False, 0)
+         
+        nbTopLevel.append_page(vbox, Gtk.Label("Save To PDF File"))
 
 
     def createPDF(self, widget, data=None):
