@@ -300,16 +300,6 @@ def ModelScatterConfidenceGraph(equation, scatterplotOnlyFlag):
         equation.dataCache.FindOrCreateAllDataCache(equation)
         yModel = equation.CalculateModelPredictions(equation.solvedCoefficients, equation.dataCache.allDataCacheDictionary)
         equation.dataCache = tempcache # restore the original data cache
-        
-        # create data for the fitted equation plot
-        xModel = numpy.linspace(min(x_data), max(x_data))
-
-        tempcache = equation.dataCache # store the data cache
-        equation.dataCache = pyeq3.dataCache()
-        equation.dataCache.allDataCacheDictionary['IndependentData'] = numpy.array([xModel, xModel])
-        equation.dataCache.FindOrCreateAllDataCache(equation)
-        yModel = equation.CalculateModelPredictions(equation.solvedCoefficients, equation.dataCache.allDataCacheDictionary)
-        equation.dataCache = tempcache # restore the original data cache
 
         # now the model as a line plot
         axes.plot(xModel, yModel)
