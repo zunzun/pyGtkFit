@@ -46,8 +46,13 @@ class ResultsWindow(Gtk.Window):
                 
         # populate the "graph reports" top-level notebook tab
         if self.equation.GetDimensionality() == 2:
-            report = IndividualReports.ModelScatterConfidenceGraph(self.equation)
+            report = IndividualReports.ModelScatterConfidenceGraph(self.equation, scatterplotOnlyFlag=False)
             reportTitle = "Model With 95%Confidence"
+            nbGraphReports.append_page(report[0], Gtk.Label(reportTitle))
+            self.graphReportsListForPDF.append([report[1], reportTitle])
+            
+            report = IndividualReports.ModelScatterConfidenceGraph(self.equation, scatterplotOnlyFlag=True)
+            reportTitle = "Scatter Plot"
             nbGraphReports.append_page(report[0], Gtk.Label(reportTitle))
             self.graphReportsListForPDF.append([report[1], reportTitle])
         else:
