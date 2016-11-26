@@ -1,4 +1,4 @@
-import os, sys, time, pickle, queue
+import os, sys, time, pickle, queue, inspect
 import pyeq3
 import warnings, gi
 
@@ -102,47 +102,53 @@ class FittingWindow(Gtk.Window):
         # no "self" needed as no later references exist
         row, col = (4, 1)
         l = Gtk.Label()
-        l.set_markup("<b>--- Example 2D Equations ---</b>")
+        l.set_markup("<b>--- Standard 2D Equations ---</b>")
         grid.attach(l, col, row, 1, 1)
 
         row, col = (4, 3)
         l = Gtk.Label()
-        l.set_markup("<b>--- Example 3D Equations ---</b>")
+        l.set_markup("<b>--- Standard 3D Equations ---</b>")
         grid.attach(l, col, row, 1, 1)
 
 
-        # ROW 5 - equation selection radio buttons
+        # ROW 5 - equation selection
         row, col = (5, 1)
         vbox = Gtk.VBox(False, 0)
-        grid.attach(vbox, col, row, 1, 1)        
-        rbgroup = None
-        index=0
-        for exampleEquationText in dfc.eq_od2D.keys():
-            rb = Gtk.RadioButton(group=rbgroup, label=exampleEquationText)
-            rb.connect("toggled", self.OnEquationSelect_2D, index) # index is used as data in callback
-            index += 1
-            vbox.pack_start(rb, True, True, 0)
-            if rbgroup == None:
-                rb.set_active(True)
-                rbgroup = rb
-            else:
-                rb.set_active(False)
+        grid.attach(vbox, col, row, 1, 1)
+        self.cb_Modules2D = Gtk.ComboBoxText()
+        self.cb_Modules2D.connect('changed', self.moduleSelectChanged_2D)
+        moduleNameList = list(dfc.eq_od2D.keys())
+        for moduleName in moduleNameList:
+            self.cb_Modules2D.append_text(moduleName)
+        vbox.pack_start(self.cb_Modules2D, False, False, 0)
+
+        self.cb_Equations2D = Gtk.ComboBoxText()
+        equationNameList = self.GetEquationListForModule(2, 'Polynomial')
+        for equationName in equationNameList:
+            self.cb_Equations2D.append_text(equationName)
+        vbox.pack_start(self.cb_Equations2D, False, False, 0)
+
+        self.cb_Modules2D.set_active(moduleNameList.index('Polynomial'))
+        self.cb_Equations2D.set_active(equationNameList.index('1st Order (Linear)'))
 
         row, col = (5, 3)
         vbox = Gtk.VBox(False, 0)
         grid.attach(vbox, col, row, 1, 1)        
-        rbgroup = None
-        index=0
-        for exampleEquationText in dfc.eq_od3D.keys():
-            rb = Gtk.RadioButton(group=rbgroup, label=exampleEquationText)
-            rb.connect("toggled", self.OnEquationSelect_3D, index) # index is used as data in callback
-            index += 1
-            vbox.pack_start(rb, True, True, 0)
-            if rbgroup == None:
-                rb.set_active(True)
-                rbgroup = rb
-            else:
-                rb.set_active(False)
+        self.cb_Modules3D = Gtk.ComboBoxText()
+        self.cb_Modules3D.connect('changed', self.moduleSelectChanged_3D)
+        moduleNameList = list(dfc.eq_od3D.keys())
+        for moduleName in moduleNameList:
+            self.cb_Modules3D.append_text(moduleName)
+        vbox.pack_start(self.cb_Modules3D, False, False, 0)
+
+        self.cb_Equations3D = Gtk.ComboBoxText()
+        equationNameList = self.GetEquationListForModule(3, 'Polynomial')
+        for equationName in equationNameList:
+            self.cb_Equations3D.append_text(equationName)
+        vbox.pack_start(self.cb_Equations3D, False, False, 0)
+
+        self.cb_Modules3D.set_active(moduleNameList.index('Polynomial'))
+        self.cb_Equations3D.set_active(equationNameList.index('Linear'))
 
         # ROW 6 - empty labels as visual buffers
         row, col = (6, 0) # left edge
@@ -223,6 +229,54 @@ class FittingWindow(Gtk.Window):
         grid.attach(b, col, row, 1, 1)
 
 
+    def moduleSelectChanged_2D(self, unused):
+        moduleName = self.cb_Modules2D.get_active_text()
+        equationNameList = self.GetEquationListForModule(2, moduleName)
+        self.cb_Equations2D.get_model().clear()
+        for equationName in equationNameList:
+            self.cb_Equations2D.append_text(equationName)
+        self.cb_Equations2D.set_active(0)
+
+
+    def moduleSelectChanged_3D(self, unused):
+        moduleName = self.cb_Modules3D.get_active_text()
+        equationNameList = self.GetEquationListForModule(3, moduleName)
+        self.cb_Equations3D.get_model().clear()
+        for equationName in equationNameList:
+            self.cb_Equations3D.append_text(equationName)
+        self.cb_Equations3D.set_active(0)
+
+
+    def GetEquationListForModule(self, inDimension, inModuleName):
+        strModule = 'pyeq3.Models_' + str(inDimension) + 'D.' + inModuleName
+        moduleMembers = inspect.getmembers(eval(strModule))
+        returnList = []
+        for equationClass in moduleMembers:
+            if inspect.isclass(equationClass[1]):
+                for extendedVersionName in ['Default', 'Offset']:
+                    
+                    # if the equation *already* has an offset,
+                    # do not add an offset version here
+                    if (-1 != extendedVersionName.find('Offset')) and (equationClass[1].autoGenerateOffsetForm == False):
+                        continue
+                        
+                    # in this application, exclude equation than need extra input
+                    if equationClass[1].splineFlag or \
+                            equationClass[1].userSelectablePolynomialFlag or \
+                            equationClass[1].userCustomizablePolynomialFlag or \
+                            equationClass[1].userSelectablePolyfunctionalFlag or \
+                            equationClass[1].userSelectableRationalFlag or \
+                            equationClass[1].userDefinedFunctionFlag:
+                        continue
+
+                    equation = equationClass[1]('SSQABS', extendedVersionName)
+
+                    returnList.append(equation.GetDisplayName())
+                    
+        returnList.sort()
+        return returnList
+
+
     def do_status_update(self, unused):
         data = self.queue.get_nowait()
         
@@ -251,14 +305,15 @@ class FittingWindow(Gtk.Window):
         startIter, endIter = textBuffer.get_bounds()
         textData = textBuffer.get_text(startIter, endIter, False)
         
-        equationSelection = list(dfc.eq_od2D.keys())[self.equationSelect_2D]
+        moduleName = self.cb_Modules2D.get_active_text()
+        equationName = self.cb_Equations2D.get_active_text()
         fittingTargetSelection = dfc.fittingTargetList[self.fittingTargetSelect_2D]
         
         # the GUI's fitting target string contains what we need - extract it
         fittingTarget = fittingTargetSelection.split('(')[1].split(')')[0]
 
-        item = dfc.eq_od2D[equationSelection]
-        eqString = 'pyeq3.Models_2D.' + item[0] + '(fittingTarget, ' + "'" + item[1] + "'" + item[2] + ')'
+        item = dfc.eq_od2D[moduleName][equationName]
+        eqString = 'pyeq3.Models_2D.' + moduleName + '.' + item[0] + "('" + fittingTarget + "','" + item[1] + "')"
         self.equation = eval(eqString)
 
         # convert text to numeric data checking for log of negative numbers, etc.
@@ -304,14 +359,15 @@ class FittingWindow(Gtk.Window):
         startIter, endIter = textBuffer.get_bounds()
         textData = textBuffer.get_text(startIter, endIter, False)
         
-        equationSelection = list(dfc.eq_od3D.keys())[self.equationSelect_3D]
+        moduleName = self.cb_Modules3D.get_active_text()
+        equationName = self.cb_Equations3D.get_active_text()
         fittingTargetSelection = dfc.fittingTargetList[self.fittingTargetSelect_3D]
         
         # the GUI's fitting target string contains what we need - extract it
         fittingTarget = fittingTargetSelection.split('(')[1].split(')')[0]
 
-        item = dfc.eq_od3D[equationSelection]
-        eqString = 'pyeq3.Models_3D.' + item[0] + '(fittingTarget, ' + "'" + item[1] + "'" + item[2] + ')'
+        item = dfc.eq_od3D[moduleName][equationName]
+        eqString = 'pyeq3.Models_3D.' + moduleName + '.' + item[0] + "('" + fittingTarget + "','" + item[1] + "')"
         self.equation = eval(eqString)
 
         # convert text to numeric data checking for log of negative numbers, etc.
