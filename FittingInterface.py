@@ -117,13 +117,13 @@ class FittingWindow(Gtk.Window):
         grid.attach(vbox, col, row, 1, 1)
         self.cb_Modules2D = Gtk.ComboBoxText()
         self.cb_Modules2D.connect('changed', self.moduleSelectChanged_2D)
-        moduleNameList = list(dfc.eq_od2D.keys())
+        moduleNameList = sorted(list(dfc.eq_od2D.keys()))
         for moduleName in moduleNameList:
             self.cb_Modules2D.append_text(moduleName)
         vbox.pack_start(self.cb_Modules2D, False, False, 0)
 
         self.cb_Equations2D = Gtk.ComboBoxText()
-        equationNameList = self.GetEquationListForModule(2, 'Polynomial')
+        equationNameList = sorted(list(dfc.eq_od2D['Polynomial'].keys()))
         for equationName in equationNameList:
             self.cb_Equations2D.append_text(equationName)
         vbox.pack_start(self.cb_Equations2D, False, False, 0)
@@ -136,13 +136,13 @@ class FittingWindow(Gtk.Window):
         grid.attach(vbox, col, row, 1, 1)        
         self.cb_Modules3D = Gtk.ComboBoxText()
         self.cb_Modules3D.connect('changed', self.moduleSelectChanged_3D)
-        moduleNameList = list(dfc.eq_od3D.keys())
+        moduleNameList = sorted(list(dfc.eq_od3D.keys()))
         for moduleName in moduleNameList:
             self.cb_Modules3D.append_text(moduleName)
         vbox.pack_start(self.cb_Modules3D, False, False, 0)
 
         self.cb_Equations3D = Gtk.ComboBoxText()
-        equationNameList = self.GetEquationListForModule(3, 'Polynomial')
+        equationNameList = sorted(list(dfc.eq_od3D['Polynomial'].keys()))
         for equationName in equationNameList:
             self.cb_Equations3D.append_text(equationName)
         vbox.pack_start(self.cb_Equations3D, False, False, 0)
@@ -231,7 +231,7 @@ class FittingWindow(Gtk.Window):
 
     def moduleSelectChanged_2D(self, unused):
         moduleName = self.cb_Modules2D.get_active_text()
-        equationNameList = self.GetEquationListForModule(2, moduleName)
+        equationNameList = sorted(list(dfc.eq_od2D[moduleName].keys()))
         self.cb_Equations2D.get_model().clear()
         for equationName in equationNameList:
             self.cb_Equations2D.append_text(equationName)
@@ -240,41 +240,11 @@ class FittingWindow(Gtk.Window):
 
     def moduleSelectChanged_3D(self, unused):
         moduleName = self.cb_Modules3D.get_active_text()
-        equationNameList = self.GetEquationListForModule(3, moduleName)
+        equationNameList = sorted(list(dfc.eq_od3D[moduleName].keys()))
         self.cb_Equations3D.get_model().clear()
         for equationName in equationNameList:
             self.cb_Equations3D.append_text(equationName)
         self.cb_Equations3D.set_active(0)
-
-
-    def GetEquationListForModule(self, inDimension, inModuleName):
-        strModule = 'pyeq3.Models_' + str(inDimension) + 'D.' + inModuleName
-        moduleMembers = inspect.getmembers(eval(strModule))
-        returnList = []
-        for equationClass in moduleMembers:
-            if inspect.isclass(equationClass[1]):
-                for extendedVersionName in ['Default', 'Offset']:
-                    
-                    # if the equation *already* has an offset,
-                    # do not add an offset version here
-                    if (-1 != extendedVersionName.find('Offset')) and (equationClass[1].autoGenerateOffsetForm == False):
-                        continue
-                        
-                    # in this application, exclude equation than need extra input
-                    if equationClass[1].splineFlag or \
-                            equationClass[1].userSelectablePolynomialFlag or \
-                            equationClass[1].userCustomizablePolynomialFlag or \
-                            equationClass[1].userSelectablePolyfunctionalFlag or \
-                            equationClass[1].userSelectableRationalFlag or \
-                            equationClass[1].userDefinedFunctionFlag:
-                        continue
-
-                    equation = equationClass[1]('SSQABS', extendedVersionName)
-
-                    returnList.append(equation.GetDisplayName())
-                    
-        returnList.sort()
-        return returnList
 
 
     def do_status_update(self, unused):
